@@ -1,0 +1,5 @@
+- 👋 Hi, I’m @hypes999
+- 👀 I’m interested in learn new things
+- 🌱 I’m currently learning cibersecurity
+- 💞️ I’m looking to collaborate on small projects
+- 📫 How to reach me, in this app
