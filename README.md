@@ -2,4 +2,4 @@
 - Interested in learn new things
 - I’m currently learning cibersecurity
 - Projetos: Automação, análise de segurança, scripts úteis
-- Contacto: [LinkedIn][(https://www.linkedin.com/in/gregalado-work/)]
+- Contacto: [LinkedIn](https://www.linkedin.com/in/gregalado-work)
