@@ -1,5 +1,5 @@
 - Hi, I’m @hypes999
 - Interested in learn new things
 - I’m currently learning cibersecurity
-- Projetos: Automação, análise de segurança, scripts úteis
-- Contacto: [LinkedIn](https://www.linkedin.com/in/gregalado-work)
+- Projets: Security Analisys, useful scripts
+- Contact: [LinkedIn](https://www.linkedin.com/in/gregalado-work)
