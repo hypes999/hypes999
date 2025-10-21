@@ -24,5 +24,5 @@
 
 ---
 
-![tryhackme stats](https://raw.githubusercontent.com/hypes/hypes/main/assets/thm_propic.png)
+![tryhackme stats](https://raw.githubusercontent.com/hypes999/hypes999/main/assets/thm_propic.png)
 
