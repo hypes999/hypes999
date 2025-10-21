@@ -1,9 +1,9 @@
 name: TryHackMe Update Badge (Manual Puppeteer)
 
 on:
-  workflow_dispatch:
+  workflow_dispatch:        # permite executar manualmente em Actions
   schedule:
-    - cron: '0 0 * * *'   # Atualiza diariamente (UTC)
+    - cron: '0 0 * * *'     # executa todos os dias à meia-noite (UTC)
 
 permissions:
   contents: write
@@ -29,15 +29,29 @@ jobs:
           node - <<'NODE'
           import puppeteer from "puppeteer";
           import fs from "fs";
+
           const url = "https://tryhackme.com/api/v2/badges/public-profile?userPublicId=3586204";
           const output = "./assets/thm_propic.png";
-          const browser = await puppeteer.launch({ headless: "new" });
+
+          const browser = await puppeteer.launch({
+            headless: "new",
+            args: [
+              "--no-sandbox",
+              "--disable-setuid-sandbox",
+              "--disable-dev-shm-usage",
+              "--disable-gpu",
+              "--no-zygote"
+            ]
+          });
+
           const page = await browser.newPage();
           await page.setViewport({ width: 600, height: 400 });
           await page.goto(url, { waitUntil: "networkidle0" });
+
           const element = await page.$("body");
           const buffer = await element.screenshot({ omitBackground: true });
           fs.writeFileSync(output, buffer);
+
           await browser.close();
           NODE
 
@@ -46,7 +60,11 @@ jobs:
           git config user.name "thm-bot"
           git config user.email "thm@bot.com"
           git add ./assets/thm_propic.png
-          git commit -m "Auto-update TryHackMe badge"
-          git push
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "Auto-update TryHackMe badge"
+            git push
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
