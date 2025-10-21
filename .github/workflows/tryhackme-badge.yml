@@ -1,16 +1,15 @@
-name: TryHackMe Update Badge
+name: TryHackMe Update Badge (Manual Puppeteer)
 
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 0 * * *'   # executa diariamente (UTC)
+    - cron: '0 0 * * *'   # Atualiza diariamente (UTC)
 
 permissions:
   contents: write
 
 jobs:
-  tryhackme-badge-update:
-    name: Update TryHackMe badge
+  update-badge:
     runs-on: ubuntu-latest
 
     steps:
@@ -24,21 +23,30 @@ jobs:
         run: |
           npm install puppeteer@24.26.0
           npx puppeteer browsers install chrome
-        env:
-          PUPPETEER_CACHE_DIR: /home/runner/.cache/puppeteer
 
-      - name: Configure Chrome path
+      - name: Generate TryHackMe badge image
         run: |
-          echo "export CHROME_PATH=$(find /home/runner/.cache/puppeteer -name chrome -type f | head -n 1)" >> $GITHUB_ENV
-          echo "Chrome path set to: $CHROME_PATH"
+          node - <<'NODE'
+          import puppeteer from "puppeteer";
+          import fs from "fs";
+          const url = "https://tryhackme.com/api/v2/badges/public-profile?userPublicId=3586204";
+          const output = "./assets/thm_propic.png";
+          const browser = await puppeteer.launch({ headless: "new" });
+          const page = await browser.newPage();
+          await page.setViewport({ width: 600, height: 400 });
+          await page.goto(url, { waitUntil: "networkidle0" });
+          const element = await page.$("body");
+          const buffer = await element.screenshot({ omitBackground: true });
+          fs.writeFileSync(output, buffer);
+          await browser.close();
+          NODE
 
-      - name: Run TryHackMe badge workflow
-        uses: p4p1/tryhackme-badge-workflow@main
+      - name: Commit and push updated badge
+        run: |
+          git config user.name "thm-bot"
+          git config user.email "thm@bot.com"
+          git add ./assets/thm_propic.png
+          git commit -m "Auto-update TryHackMe badge"
+          git push
         env:
-          PUPPETEER_EXECUTABLE_PATH: ${{ env.CHROME_PATH }}
-        with:
-          username: "hypes999"
-          user_public_id: "3586204"
-          image_path: "./assets/thm_propic.png"
-          use_static_image: "false"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
