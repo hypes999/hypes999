@@ -3,7 +3,7 @@ name: TryHackMe Update Badge
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 0 * * *'   # diária (UTC)
+    - cron: '0 0 * * *'   # executa diariamente (UTC)
 
 permissions:
   contents: write
@@ -20,14 +20,16 @@ jobs:
       - name: Ensure assets folder exists
         run: mkdir -p ./assets
 
-      - name: Install Chrome for Puppeteer
-        run: npx puppeteer browsers install chrome
+      - name: Install Puppeteer and Chrome
+        run: |
+          npm install puppeteer@24.26.0
+          npx puppeteer browsers install chrome
 
       - name: Run TryHackMe badge workflow
         uses: p4p1/tryhackme-badge-workflow@main
         with:
           username: "hypes999"
-          user_public_id: "3586204"     # <<-- substitui pelo teu ID público TryHackMe (número)
+          user_public_id: "3586204"
           image_path: "./assets/thm_propic.png"
           use_static_image: "false"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
