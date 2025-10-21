@@ -24,9 +24,18 @@ jobs:
         run: |
           npm install puppeteer@24.26.0
           npx puppeteer browsers install chrome
+        env:
+          PUPPETEER_CACHE_DIR: /home/runner/.cache/puppeteer
+
+      - name: Configure Chrome path
+        run: |
+          echo "export CHROME_PATH=$(find /home/runner/.cache/puppeteer -name chrome -type f | head -n 1)" >> $GITHUB_ENV
+          echo "Chrome path set to: $CHROME_PATH"
 
       - name: Run TryHackMe badge workflow
         uses: p4p1/tryhackme-badge-workflow@main
+        env:
+          PUPPETEER_EXECUTABLE_PATH: ${{ env.CHROME_PATH }}
         with:
           username: "hypes999"
           user_public_id: "3586204"
