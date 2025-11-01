@@ -1,5 +1,3 @@
-# Olá, eu sou o hypes
-
 Estudante de **Cibersegurança**  
 Interessado em **CTFs**, **Pentesting**, e **Automação de Segurança**  
 Atualmente a trabalhar em laboratórios, projetos e desafios práticos  
