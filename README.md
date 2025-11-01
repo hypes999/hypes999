@@ -21,7 +21,3 @@ Atualmente a trabalhar em laboratórios, projetos e desafios práticos
 ---
 
 > “Practice makes progress — not perfection.”
-
-
-
----
