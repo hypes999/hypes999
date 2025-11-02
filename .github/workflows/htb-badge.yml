@@ -1,9 +1,9 @@
-name: Hack The Box Badge (final)
+name: Hack The Box Badge (auto resize 329x88)
 
 on:
   schedule:
-    - cron: '0 0 * * *'   # daily at 00:00 UTC
-  workflow_dispatch:
+    - cron: '0 0 * * *'   # corre todos os dias à meia-noite UTC
+  workflow_dispatch:       # permite execução manual no separador Actions
 
 permissions:
   contents: write
@@ -11,6 +11,7 @@ permissions:
 jobs:
   update-htb-badge:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -25,22 +26,66 @@ jobs:
           TMP="./assets/htb_badge.tmp.png"
           OUT="./assets/htb_badge.png"
 
-          echo "Fetching badge from $BADGE_URL ..."
+          echo "A transferir badge de $BADGE_URL ..."
           curl -fsSL "$BADGE_URL" -o "$TMP"
 
+          # Se o ficheiro principal ainda não existir, grava logo
           if [ ! -f "$OUT" ]; then
             mv "$TMP" "$OUT"
-            echo "Saved first badge image to $OUT"
+            echo "Guardado novo badge em $OUT"
             exit 0
           fi
 
+          # Se o ficheiro mudou, substitui
           if ! cmp -s "$TMP" "$OUT"; then
             mv "$TMP" "$OUT"
-            echo "Badge changed -> updated $OUT"
+            echo "Badge alterado -> atualizado $OUT"
           else
-            echo "Badge unchanged -> no update"
+            echo "Badge sem alterações -> nada a atualizar"
             rm -f "$TMP"
           fi
+
+      - name: Install ImageMagick
+        run: sudo apt-get update && sudo apt-get install -y imagemagick
+
+      - name: Resize & pad HTB badge to 329x88
+        run: |
+          IN="./assets/htb_badge.png"
+          TMP="./assets/htb_badge_resized.png"
+          FINAL="./assets/htb_badge.png"
+
+          TARGET_W=329
+          TARGET_H=88
+
+          if [ ! -f "$IN" ]; then
+            echo "Ficheiro $IN não encontrado."
+            exit 0
+          fi
+
+          echo "A redimensionar imagem para ${TARGET_W}x${TARGET_H}..."
+
+          # 1) Redimensionar mantendo proporção pela altura
+          convert "$IN" -resize x${TARGET_H} "$TMP"
+
+          # 2) Obter dimensões atuais
+          W=$(identify -format "%w" "$TMP")
+          H=$(identify -format "%h" "$TMP")
+          echo "Dimensões após resize: ${W}x${H}"
+
+          # 3) Ajustar se ultrapassar a largura
+          if [ "$W" -gt "$TARGET_W" ]; then
+            convert "$TMP" -resize ${TARGET_W}x "$TMP"
+            W=$(identify -format "%w" "$TMP")
+            H=$(identify -format "%h" "$TMP")
+            echo "Ajustado para caber: ${W}x${H}"
+          fi
+
+          # 4) Criar canvas 329x88 transparente e centrar
+          convert -size ${TARGET_W}x${TARGET_H} xc:none \
+                  -gravity center "$TMP" -composite "$FINAL"
+
+          rm -f "$TMP"
+          echo "Badge final gravado em $FINAL"
 
       - name: Commit & push if changed
         run: |
@@ -48,10 +93,11 @@ jobs:
           git config user.email "htb@bot.com"
           git add ./assets/htb_badge.png || true
           if ! git diff --cached --quiet; then
-            git commit -m "Auto-update HTB badge (id:2660530)"
+            git commit -m "Auto-update Hack The Box badge (id:2660530)"
             git push
+            echo "Commit enviado."
           else
-            echo "No changes to commit."
+            echo "Sem alterações para commitar."
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
