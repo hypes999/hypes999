@@ -1,9 +1,9 @@
-name: Hack The Box Badge (auto resize 329x88)
+name: Hack The Box Badge (auto resize + align)
 
 on:
   schedule:
-    - cron: '0 0 * * *'   # corre todos os dias à meia-noite UTC
-  workflow_dispatch:       # permite execução manual no separador Actions
+    - cron: '0 */6 * * *'   # executa a cada 6 horas
+  workflow_dispatch:         # permite executar manualmente no separador Actions
 
 permissions:
   contents: write
@@ -26,7 +26,7 @@ jobs:
           TMP="./assets/htb_badge.tmp.png"
           OUT="./assets/htb_badge.png"
 
-          echo "A transferir badge de $BADGE_URL ..."
+          echo "📥 A transferir badge de $BADGE_URL ..."
           curl -fsSL "$BADGE_URL" -o "$TMP"
 
           # Se o ficheiro principal ainda não existir, grava logo
@@ -48,41 +48,38 @@ jobs:
       - name: Install ImageMagick
         run: sudo apt-get update && sudo apt-get install -y imagemagick
 
-      - name: Resize & pad HTB badge to 329x88
+      - name: Resize & pad HTB badge to 329x88 (visual align)
         run: |
           IN="./assets/htb_badge.png"
           TMP="./assets/htb_badge_resized.png"
           FINAL="./assets/htb_badge.png"
-
           TARGET_W=329
           TARGET_H=88
 
           if [ ! -f "$IN" ]; then
-            echo "Ficheiro $IN não encontrado."
+            echo "Ficheiro não encontrado: $IN"
             exit 0
           fi
 
-          echo "A redimensionar imagem para ${TARGET_W}x${TARGET_H}..."
+          echo "Redimensionar e alinhar visualmente..."
 
-          # 1) Redimensionar mantendo proporção pela altura
+          # Redimensionar mantendo proporção pela altura
           convert "$IN" -resize x${TARGET_H} "$TMP"
 
-          # 2) Obter dimensões atuais
+          # Obter dimensões após resize
           W=$(identify -format "%w" "$TMP")
           H=$(identify -format "%h" "$TMP")
-          echo "Dimensões após resize: ${W}x${H}"
 
-          # 3) Ajustar se ultrapassar a largura
+          # Ajustar se ultrapassar largura
           if [ "$W" -gt "$TARGET_W" ]; then
             convert "$TMP" -resize ${TARGET_W}x "$TMP"
             W=$(identify -format "%w" "$TMP")
             H=$(identify -format "%h" "$TMP")
-            echo "Ajustado para caber: ${W}x${H}"
           fi
 
-          # 4) Criar canvas 329x88 transparente e centrar
+          # Criar canvas e deslocar ligeiramente o conteúdo para cima (-6 px)
           convert -size ${TARGET_W}x${TARGET_H} xc:none \
-                  -gravity center "$TMP" -composite "$FINAL"
+                  -gravity center -geometry +0-6 "$TMP" -composite "$FINAL"
 
           rm -f "$TMP"
           echo "Badge final gravado em $FINAL"
