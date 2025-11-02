@@ -6,7 +6,7 @@ Atualmente a trabalhar em laboratórios, projetos e desafios práticos
 
 ### TryHackMe Progress
 ![TryHackMe Stats](https://raw.githubusercontent.com/hypes999/hypes999/main/assets/thm_propic.png)
-[![hypes' hackthebox stats](https://raw.githubusercontent.com/hypes/hypes/main/assets/htb_badge.png)](https://www.hackthebox.com/profile/2660530)
+[![hypes' hackthebox stats](https://raw.githubusercontent.com/hypes999/hypes999/main/assets/htb_badge.png)](https://www.hackthebox.com/profile/2660530)
 ---
 
 ### 📂 Projetos em Destaque
