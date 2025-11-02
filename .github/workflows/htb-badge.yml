@@ -1,0 +1,107 @@
+name: Hack The Box Badge Update (public profile)
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *' # daily at 00:00 UTC
+
+permissions:
+  contents: write
+
+jobs:
+  update-badge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Ensure assets folder exists
+        run: mkdir -p ./assets
+
+      - name: Install Node & Puppeteer
+        run: |
+          npm init -y
+          npm install puppeteer@24.26.0
+
+      - name: Generate Hack The Box badge image
+        run: |
+          node - <<'NODE'
+          import puppeteer from "puppeteer";
+          import fs from "fs";
+
+          const url = "https://app.hackthebox.com/profile/2660530";
+          const output = "./assets/htb_badge.png";
+
+          const browser = await puppeteer.launch({
+            headless: "new",
+            args: [
+              "--no-sandbox",
+              "--disable-setuid-sandbox",
+              "--disable-dev-shm-usage",
+              "--disable-gpu",
+              "--no-zygote"
+            ]
+          });
+
+          const page = await browser.newPage();
+          // Wider viewport to capture horizontal card
+          await page.setViewport({ width: 1200, height: 480 });
+
+          await page.goto(url, { waitUntil: "networkidle2", timeout: 30000 });
+
+          // Try a list of selectors to find the profile card/header.
+          const selectors = [
+            ".profile-header",       // common convention
+            ".profile",              // fallback
+            ".user-profile",         // alternative
+            ".profile-content",      // earlier used
+            "main",                  // capture main if everything else fails
+            "body"
+          ];
+
+          let elementHandle = null;
+          for (const sel of selectors) {
+            try {
+              const el = await page.$(sel);
+              if (el) {
+                // ensure the element is visible/has size
+                const box = await el.boundingBox();
+                if (box && box.width > 20 && box.height > 20) {
+                  elementHandle = el;
+                  console.log("Using selector:", sel);
+                  break;
+                }
+              }
+            } catch (e) {
+              // ignore and try next selector
+            }
+          }
+
+          if (!elementHandle) {
+            console.warn("No profile element found — capturing full page as fallback.");
+            const full = await page.screenshot({ fullPage: true });
+            fs.writeFileSync(output, full);
+            await browser.close();
+            process.exit(0);
+          }
+
+          // Element found: take screenshot of the element to get a compact badge
+          const buffer = await elementHandle.screenshot({ omitBackground: true });
+          fs.writeFileSync(output, buffer);
+
+          await browser.close();
+          NODE
+
+      - name: Commit and push updated badge
+        run: |
+          git config user.name "htb-bot"
+          git config user.email "htb@bot.com"
+          git add ./assets/htb_badge.png
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "Auto-update Hack The Box badge"
+            git push
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
