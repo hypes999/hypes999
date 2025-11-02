@@ -16,9 +16,13 @@ Atualmente a trabalhar em laboratórios, projetos e desafios práticos
 ---
 
 ### Tecnologias & Interesses
-`Linux` • `Networking` • `Python` • `Bash` • `Pentesting` • `Blue Team` • `Red Team`
+`Linux` • `Networking` • `Pentesting` • `Blue Team` • `Red Team`
 
-[![My Skills](https://skillicons.dev/icons?i=js,html,css,wasm)](https://skillicons.dev)
+<p align="center">
+  <a href="https://skillicons.dev">
+    <img src="https://skillicons.dev/icons?i=bash,cloudflare,css,html,js,linux,kali,obsidian,ps,powershell,py,vscode,windows,wordpress" />
+  </a>
+</p>
 
 ---
 
