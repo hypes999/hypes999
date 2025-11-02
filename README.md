@@ -19,5 +19,5 @@ Atualmente a trabalhar em laboratórios, projetos e desafios práticos
 `Linux` • `Networking` • `Python` • `Bash` • `Pentesting` • `Blue Team` • `Red Team`
 
 ---
-
+?logo=bradd
 > “Practice makes progress — not perfection.”
