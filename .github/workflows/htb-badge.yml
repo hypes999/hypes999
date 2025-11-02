@@ -2,7 +2,7 @@ name: Hack The Box Badge (auto resize + align)
 
 on:
   schedule:
-    - cron: '0 */6 * * *'   # executa a cada 6 horas
+    - cron: '0 0 * * *'   # executa todos os dias à meia-noite UTC
   workflow_dispatch:         # permite executar manualmente no separador Actions
 
 permissions:
