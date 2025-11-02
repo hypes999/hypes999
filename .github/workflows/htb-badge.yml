@@ -1,9 +1,9 @@
-name: Hack The Box Badge (simple)
+name: Hack The Box Badge (final)
 
 on:
   schedule:
     - cron: '0 0 * * *'   # daily at 00:00 UTC
-  workflow_dispatch:     # allow manual runs
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -21,28 +21,25 @@ jobs:
       - name: Download HTB badge image
         run: |
           HTB_ID=2660530
-          BADGE_URL="https://www.hackthebox.com/badge/image/${HTB_ID}"
+          BADGE_URL="https://www.hackthebox.eu/badge/image/${HTB_ID}"
           TMP="./assets/htb_badge.tmp.png"
           OUT="./assets/htb_badge.png"
 
-          # download to tmp file (fail workflow if download fails)
+          echo "Fetching badge from $BADGE_URL ..."
           curl -fsSL "$BADGE_URL" -o "$TMP"
 
-          # if out doesn't exist -> move tmp to out
           if [ ! -f "$OUT" ]; then
             mv "$TMP" "$OUT"
-            echo "Saved new badge to $OUT"
+            echo "Saved first badge image to $OUT"
             exit 0
           fi
 
-          # compare; if different replace
           if ! cmp -s "$TMP" "$OUT"; then
             mv "$TMP" "$OUT"
             echo "Badge changed -> updated $OUT"
           else
             echo "Badge unchanged -> no update"
             rm -f "$TMP"
-            # Exit with 0; next step will check git diff and do nothing
           fi
 
       - name: Commit & push if changed
@@ -50,8 +47,6 @@ jobs:
           git config user.name "htb-bot"
           git config user.email "htb@bot.com"
           git add ./assets/htb_badge.png || true
-
-          # If there is anything to commit, commit & push
           if ! git diff --cached --quiet; then
             git commit -m "Auto-update HTB badge (id:2660530)"
             git push
