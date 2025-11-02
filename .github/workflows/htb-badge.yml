@@ -1,107 +1,62 @@
-name: Hack The Box Badge Update (public profile)
+name: Hack The Box Badge (simple)
 
 on:
-  workflow_dispatch:
   schedule:
-    - cron: '0 0 * * *' # daily at 00:00 UTC
+    - cron: '0 0 * * *'   # daily at 00:00 UTC
+  workflow_dispatch:     # allow manual runs
 
 permissions:
   contents: write
 
 jobs:
-  update-badge:
+  update-htb-badge:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Ensure assets folder exists
         run: mkdir -p ./assets
 
-      - name: Install Node & Puppeteer
+      - name: Download HTB badge image
         run: |
-          npm init -y
-          npm install puppeteer@24.26.0
+          HTB_ID=2660530
+          BADGE_URL="https://www.hackthebox.com/badge/image/${HTB_ID}"
+          TMP="./assets/htb_badge.tmp.png"
+          OUT="./assets/htb_badge.png"
 
-      - name: Generate Hack The Box badge image
-        run: |
-          node - <<'NODE'
-          import puppeteer from "puppeteer";
-          import fs from "fs";
+          # download to tmp file (fail workflow if download fails)
+          curl -fsSL "$BADGE_URL" -o "$TMP"
 
-          const url = "https://app.hackthebox.com/profile/2660530";
-          const output = "./assets/htb_badge.png";
+          # if out doesn't exist -> move tmp to out
+          if [ ! -f "$OUT" ]; then
+            mv "$TMP" "$OUT"
+            echo "Saved new badge to $OUT"
+            exit 0
+          fi
 
-          const browser = await puppeteer.launch({
-            headless: "new",
-            args: [
-              "--no-sandbox",
-              "--disable-setuid-sandbox",
-              "--disable-dev-shm-usage",
-              "--disable-gpu",
-              "--no-zygote"
-            ]
-          });
+          # compare; if different replace
+          if ! cmp -s "$TMP" "$OUT"; then
+            mv "$TMP" "$OUT"
+            echo "Badge changed -> updated $OUT"
+          else
+            echo "Badge unchanged -> no update"
+            rm -f "$TMP"
+            # Exit with 0; next step will check git diff and do nothing
+          fi
 
-          const page = await browser.newPage();
-          // Wider viewport to capture horizontal card
-          await page.setViewport({ width: 1200, height: 480 });
-
-          await page.goto(url, { waitUntil: "networkidle2", timeout: 30000 });
-
-          // Try a list of selectors to find the profile card/header.
-          const selectors = [
-            ".profile-header",       // common convention
-            ".profile",              // fallback
-            ".user-profile",         // alternative
-            ".profile-content",      // earlier used
-            "main",                  // capture main if everything else fails
-            "body"
-          ];
-
-          let elementHandle = null;
-          for (const sel of selectors) {
-            try {
-              const el = await page.$(sel);
-              if (el) {
-                // ensure the element is visible/has size
-                const box = await el.boundingBox();
-                if (box && box.width > 20 && box.height > 20) {
-                  elementHandle = el;
-                  console.log("Using selector:", sel);
-                  break;
-                }
-              }
-            } catch (e) {
-              // ignore and try next selector
-            }
-          }
-
-          if (!elementHandle) {
-            console.warn("No profile element found — capturing full page as fallback.");
-            const full = await page.screenshot({ fullPage: true });
-            fs.writeFileSync(output, full);
-            await browser.close();
-            process.exit(0);
-          }
-
-          // Element found: take screenshot of the element to get a compact badge
-          const buffer = await elementHandle.screenshot({ omitBackground: true });
-          fs.writeFileSync(output, buffer);
-
-          await browser.close();
-          NODE
-
-      - name: Commit and push updated badge
+      - name: Commit & push if changed
         run: |
           git config user.name "htb-bot"
           git config user.email "htb@bot.com"
-          git add ./assets/htb_badge.png
-          if git diff --cached --quiet; then
-            echo "No changes to commit."
-          else
-            git commit -m "Auto-update Hack The Box badge"
+          git add ./assets/htb_badge.png || true
+
+          # If there is anything to commit, commit & push
+          if ! git diff --cached --quiet; then
+            git commit -m "Auto-update HTB badge (id:2660530)"
             git push
+          else
+            echo "No changes to commit."
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
