@@ -11,7 +11,7 @@ Atualmente a trabalhar em laboratórios, projetos e desafios práticos
 
 ### 📂 Projetos em Destaque
 - 🔹 **[Cyber Lab](https://github.com/hypes999/cyber-lab)** — Repositório com projetos práticos, CTFs e anotações do curso.  
-- 🔹 **[Homelab](https://github.com/hypes999/Homelab)** — Homelab XAMPP + NextCloud + more 
+- 🔹 **[Homelab](https://github.com/hypes999/Homelab)** — Homelab Proxmox + NextCloud + more 
 
 ---
 
