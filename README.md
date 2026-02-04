@@ -1,5 +1,5 @@
 Estudante de **Cibersegurança**  
-Interessado em **CTFs**, **Pentesting**, e **Automação de Segurança**  
+Interessado em **Blue Team** e **Automação de Segurança**  
 Atualmente a trabalhar em laboratórios, projetos e desafios práticos  
 
 ---
