@@ -8,8 +8,8 @@ Atualmente a trabalhar em laboratórios, projetos e desafios práticos.
 
 ### TryHackMe & HackTheBox
 
-![TryHackMe Stats](https://raw.githubusercontent.com/hypes999/hypes999/main/assets/thm_propic.png)
-[![hypes999 HackTheBox](https://raw.githubusercontent.com/hypes999/hypes999/main/assets/htb_badge.png)](https://app.hackthebox.com/profile/2660530)
+- TryHackMe: [hypes999](https://tryhackme.com/p/hypes999)  
+- HackTheBox: [hypes999](https://app.hackthebox.com/profile/2660530)
 
 ---
 
