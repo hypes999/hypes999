@@ -16,7 +16,7 @@ Atualmente a trabalhar em laboratórios, projetos e desafios práticos
 ---
 
 ### Tecnologias & Interesses
-`Linux` • `Networking` • `Pentesting` • `Blue Team` • `Red Team`
+`Linux` • `Networking` • `Pentesting` • `Blue Team`
 
 <p align="center">
   <a href="https://skillicons.dev">
