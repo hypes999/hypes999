@@ -15,9 +15,9 @@ Atualmente a trabalhar em laboratórios, projetos e desafios práticos.
 
 ### 🚀 Projetos em Destaque
 
-- 🔹 **[Cybersecurity Toolkit](https://github.com/hypes999/cybersecurity-toolkit)** — Coleção de ferramentas em Python (Diceware PT‑PT, futuros scanners, etc.).  
-- 🔹 **[Cyber Lab](https://github.com/hypes999/cyber-lab)** — Projetos práticos, CTFs e anotações do curso.  
-- 🔹 **[Homelab](https://github.com/hypes999/Homelab)** — Homelab Proxmox + Nextcloud + outros serviços.
+- **[Cybersecurity Toolkit](https://github.com/hypes999/cybersecurity-toolkit)** — Coleção de ferramentas em Python (Diceware PT‑PT, futuros scanners, etc.).  
+- **[Cyber Lab](https://github.com/hypes999/cyber-lab)** — Projetos práticos, CTFs e anotações do curso.  
+- **[Homelab](https://github.com/hypes999/Homelab)** — Homelab Proxmox + Nextcloud + outros serviços.
 
 ---
 
